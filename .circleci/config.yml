@@ -4,53 +4,39 @@ version: 2.1
 
 # Define a job to be invoked later in a workflow.
 # See: https://circleci.com/docs/2.0/configuration-reference/#jobs
-jobs:
-  say-hello:
-    # Specify the execution environment. You can specify an image from Dockerhub or use one of our Convenience Images from CircleCI's Developer Hub.
-    # See: https://circleci.com/docs/2.0/configuration-reference/#docker-machine-macos-windows-executor
-    docker:
-      - image: cimg/base:stable
-    # Add steps to the job
-    # See: https://circleci.com/docs/2.0/configuration-reference/#steps
-    steps:
-      - checkout
-      - run:
-          name: "Say hello"
-          command: "echo Hello, World!"
-  
-  print_hello:
+jobs:    
+  save_hello_world_output:
     docker:
       - image: circleci/node:13.8.0
     steps:
-      - run:
-          name: "Print Hello"
-          command: "echo Hello"
-  
-  print_world:
-    docker:
-      - image: circleci/node:13.8.0
-    steps:
-      - run:
-          name: "Print World"
-          command: "echo World"
+      - run: mkdir -p workspace
+      - run: echo "hello world" > echo-output.txt
+      - persist_to_workspace:
+          root: workspace
+          paths:
+            - echo-output.txt
     
-  print_environment_variables:
+  print_output_file:
     docker:
       - image: circleci/node:13.8.0
     steps:
-      - run:
-          name: "echo an env var that is part of our project"
-          command: |
-            echo $USER
+      - attach_workspace:
+          at: /tmp/workspace
+
+      - run: |
+          if [[`cat /tmp/workspace/echo-output.txt` == "hello world"]]; then
+            echo "It worked"
+            cat echo-output.txt
+          else
+            echo "Nope!"; exit 1
+          fi
 
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
 workflows:
   say-hello-workflow:
     jobs:
-      - say-hello
-      - print_hello
-      - print_world:
+      - save_hello_world_output
+      - print_output_file:
           requires:
-            - print_hello
-      - print_environment_variables
+            - save_hello_world_output
