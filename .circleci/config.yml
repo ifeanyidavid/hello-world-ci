@@ -2,8 +2,10 @@
 # See: https://circleci.com/docs/2.0/configuration-reference
 version: 2.1
 
-# Define a job to be invoked later in a workflow.
-# See: https://circleci.com/docs/2.0/configuration-reference/#jobs
+commands:
+  print_pipeline_id:
+    steps:
+      - run: echo $CIRCLE_WORKFLOW_ID
 jobs:    
   save_hello_world_output:
     docker:
@@ -25,13 +27,16 @@ jobs:
 
       - run: |
           if [[ `cat /tmp/workspace/echo-output.txt` == "hello world" ]]; then
-            ls ~
-            ls /tmp
             echo "It worked";
             cat /tmp/workspace/echo-output.txt
           else
             echo "Nope!"; exit 1
           fi
+  print_workflow_id:
+    docker:
+      - image: circleci/node:13.8.0
+    steps:
+      - print_pipeline_id
 
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
