@@ -10,7 +10,7 @@ jobs:
       - image: circleci/node:13.8.0
     steps:
       - run: mkdir -p workspace
-      - run: echo "hello world" > echo-output.txt
+      - run: echo "hello world" > workspace/echo-output.txt
       - persist_to_workspace:
           root: workspace
           paths:
