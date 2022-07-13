@@ -23,7 +23,13 @@ jobs:
       - attach_workspace:
           at: /tmp/workspace
 
-      - run: cat /tmp/workspace/echo-output.txt
+      - run: |
+          if [[ `cat /tmp/workspace/echo-output.txt` == "hello world" ]]; then
+            echo "It worked";
+            cat /tmp/workspace/echo-output.txt
+          else
+            echo "Nope!"; exit 1
+          fi
 
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
