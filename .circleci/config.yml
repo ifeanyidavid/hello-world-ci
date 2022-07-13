@@ -26,7 +26,7 @@ jobs:
       - run: |
           if [[ `cat /tmp/workspace/echo-output.txt` == "hello world" ]]; then
             ls ~
-            ls tmp
+            ls /tmp
             echo "It worked";
             cat /tmp/workspace/echo-output.txt
           else
